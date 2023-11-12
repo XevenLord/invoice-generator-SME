@@ -7,6 +7,8 @@ const AuthForm = () => {
   const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [isSignup, setIsSignup] = useState(false);
 
   const buttonStyle = {
@@ -15,7 +17,7 @@ const AuthForm = () => {
     padding: "8px",
     background: "#308BDE",
   };
-  
+
   const formStyle = {
     width: "300px",
     borderRadius: "8px",
@@ -28,9 +30,14 @@ const AuthForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Email:", email, "Password:", password);
 
     if (isSignup) {
+      if (password !== confirmPassword) {
+        setPasswordsMatch(false);
+        return;
+      }
+      setPasswordsMatch(true);
+
       // signup logic
     } else {
       // login logic
@@ -65,6 +72,27 @@ const AuthForm = () => {
             required
           />
         </Form.Group>
+
+        {isSignup && (
+          <>
+            <Form.Group controlId="formConfirmPassword" className="mt-4">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                style={formStyle}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
+            {!passwordsMatch && (
+              <Form.Text style={{ color: "red" }}>
+                Passwords do not match.
+              </Form.Text>
+            )}
+          </>
+        )}
 
         <div className="mt-5 mb-4 text-center">
           <Button variant="primary" type="submit" style={buttonStyle}>
