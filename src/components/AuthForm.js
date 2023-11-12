@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
+import { FiChevronLeft } from "react-icons/fi";
 
 const AuthForm = () => {
   const location = useLocation();
@@ -45,61 +46,68 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center">
-      <h3>INVOICE GENERATOR</h3>
-      <h1 style={{ color: "#215F99" }}>{isSignup ? "Sign Up" : "Login"}</h1>
-      <Form onSubmit={handleSubmit} className="mt-5 mb-4">
-        <Form.Group controlId="formEmail">
-          <Form.Label>Email address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            style={formStyle}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </Form.Group>
+    <div>
+      <div className="mb-2">
+        <Link to="/" style={{ color: "black"}}>
+        <FiChevronLeft size={38} />
+        </Link>
+      </div>
+      <div className="d-flex flex-column justify-content-center align-items-center">
+        <h3>INVOICE GENERATOR</h3>
+        <h1 style={{ color: "#215F99" }}>{isSignup ? "Sign Up" : "Login"}</h1>
+        <Form onSubmit={handleSubmit} className="mt-5 mb-4">
+          <Form.Group controlId="formEmail">
+            <Form.Label>Email address</Form.Label>
+            <Form.Control
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              style={formStyle}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </Form.Group>
 
-        <Form.Group controlId="formPassword" className="mt-4">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Password"
-            value={password}
-            style={formStyle}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </Form.Group>
+          <Form.Group controlId="formPassword" className="mt-4">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
+              type="password"
+              placeholder="Password"
+              value={password}
+              style={formStyle}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </Form.Group>
 
-        {isSignup && (
-          <>
-            <Form.Group controlId="formConfirmPassword" className="mt-4">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                style={formStyle}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </Form.Group>
-            {!passwordsMatch && (
-              <Form.Text style={{ color: "red" }}>
-                Passwords do not match.
-              </Form.Text>
-            )}
-          </>
-        )}
+          {isSignup && (
+            <>
+              <Form.Group controlId="formConfirmPassword" className="mt-4">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  style={formStyle}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              {!passwordsMatch && (
+                <Form.Text style={{ color: "red" }}>
+                  Passwords do not match.
+                </Form.Text>
+              )}
+            </>
+          )}
 
-        <div className="mt-5 mb-4 text-center">
-          <Button variant="primary" type="submit" style={buttonStyle}>
-            {isSignup ? "Create Account" : "Login"}
-          </Button>
-        </div>
-      </Form>
+          <div className="mt-5 mb-4 text-center">
+            <Button variant="primary" type="submit" style={buttonStyle}>
+              {isSignup ? "Create Account" : "Login"}
+            </Button>
+          </div>
+        </Form>
+      </div>
     </div>
   );
 };
