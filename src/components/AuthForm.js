@@ -1,10 +1,17 @@
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../firebase";
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { FiChevronLeft } from "react-icons/fi";
 
 const AuthForm = () => {
+  const navigate = useNavigate();
+
   const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,18 +45,29 @@ const AuthForm = () => {
         return;
       }
       setPasswordsMatch(true);
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          console.log(userCredential);
+          setIsSignup(false);
+        })
+        .catch((error) => console.log(error));
 
       // signup logic
     } else {
       // login logic
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          navigate("/form");
+        })
+        .catch((error) => console.log(error));
     }
   };
 
   return (
     <div>
       <div className="mb-2">
-        <Link to="/" style={{ color: "black"}}>
-        <FiChevronLeft size={38} />
+        <Link to="/" style={{ color: "black" }}>
+          <FiChevronLeft size={38} />
         </Link>
       </div>
       <div className="d-flex flex-column justify-content-center align-items-center">
