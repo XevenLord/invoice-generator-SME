@@ -8,6 +8,7 @@ import Card from 'react-bootstrap/Card';
 import InvoiceItem from './InvoiceItem';
 import InvoiceModal from './InvoiceModal';
 import InputGroup from 'react-bootstrap/InputGroup';
+import FavouriteContacts from './FavouriteContacts';
 
 class InvoiceForm extends React.Component {
   constructor(props) {
@@ -121,6 +122,21 @@ class InvoiceForm extends React.Component {
     this.setState({isOpen: true})
   };
   closeModal = (event) => this.setState({isOpen: false});
+  handleFavouriteSelect = (favourite, option) => {
+    if (option === 'billTo') {
+      this.setState({
+        billTo: favourite.name,
+        billToEmail: favourite.email,
+        billToAddress: favourite.billingAddress
+      });
+    } else if (option === 'billFrom') {
+      this.setState({
+        billFrom: favourite.name,
+        billFromEmail: favourite.email,
+        billFromAddress: favourite.billingAddress
+      });
+    }
+  };
   render() {
     return (<Form onSubmit={this.openModal}>
       <Row>
@@ -238,6 +254,10 @@ class InvoiceForm extends React.Component {
                   %
                 </InputGroup.Text>
               </InputGroup>
+            </Form.Group>
+            <Form.Group className="my-3">
+              <Form.Label className="fw-bold"></Form.Label>
+              <FavouriteContacts onFavouriteSelect={this.handleFavouriteSelect} />
             </Form.Group>
           </div>
         </Col>
