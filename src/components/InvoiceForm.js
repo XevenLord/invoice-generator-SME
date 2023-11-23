@@ -9,6 +9,7 @@ import InvoiceItem from "./InvoiceItem";
 import InvoiceModal from "./InvoiceModal";
 import InputGroup from "react-bootstrap/InputGroup";
 import AuthButton from "../AuthButton";
+import HistoryButton from "../components/HistoryButton";
 
 class InvoiceForm extends React.Component {
   constructor(props) {
@@ -336,6 +337,9 @@ class InvoiceForm extends React.Component {
                 <div className="text-end">
                   <AuthButton />
                 </div>
+              </div>
+              <div>
+                <HistoryButton />
               </div>
               <InvoiceModal
                 showModal={this.state.isOpen}
