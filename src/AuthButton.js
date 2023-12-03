@@ -15,8 +15,9 @@ const AuthButton = () => {
     if (confirmLogout) {
       signOut(auth)
         .then(() => {
+          sessionStorage.clear();
           console.log("Sign out successful");
-          navigate("/");
+          window.location.replace("/");
         })
         .catch((error) => console.log(error));
     }
@@ -48,7 +49,9 @@ const AuthButton = () => {
         </button>
       ) : (
         <button
-          onClick={() => navigate("/")}
+          onClick={() => {
+            window.location.replace("/");
+          }}
           className="btn btn-primary rounded-pill"
           style={{ marginRight: "10px" }}
         >
