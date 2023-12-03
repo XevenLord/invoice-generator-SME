@@ -8,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { FiChevronLeft } from "react-icons/fi";
+import { doc, setDoc, getFirestore } from "firebase/firestore";
 
 const AuthForm = () => {
   const navigate = useNavigate();
@@ -47,7 +48,21 @@ const AuthForm = () => {
       setPasswordsMatch(true);
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          console.log(userCredential);
+          const db = getFirestore();
+
+          // Create a user document in Firestore
+          setDoc(doc(db, "users", userCredential.user.uid), {
+            email: email,
+            uid: userCredential.user.uid,
+            favouriteContacts: [], // Assuming this is an array
+            pdfReferences: [], // Assuming this is an array
+          })
+            .then(() => {
+              console.log("User document created in Firestore");
+            })
+            .catch((error) => {
+              console.error("Error writing document to Firestore: ", error);
+            });
           setIsSignup(false);
         })
         .catch((error) => console.log(error));
