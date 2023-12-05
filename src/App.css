@@ -107,3 +107,16 @@ hr {
   border: none;
   width: 200px;
 }
+.favorite-section {
+  display: flex;
+  align-items: center; /* Aligns items vertically center */
+  justify-content: space-between; /* Pushes the button to the right */
+}
+
+.plus-button {
+  align-self: flex-end; 
+  padding: 5px 10px; 
+  margin-left: 10px; 
+  cursor: pointer; 
+  border: linen;
+}
