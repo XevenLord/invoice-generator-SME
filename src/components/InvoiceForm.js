@@ -117,6 +117,24 @@ class InvoiceForm extends React.Component {
       }
     );
   }
+
+  handleFeedbackClick = () => {
+    //this.setState({ showFeedbackModal: true });
+    const subject = encodeURIComponent("Feedback for Invoice Generator");
+    const body = encodeURIComponent("Hi, I have some feedback:\n\n");
+    const emailAddress = "aiyinn0621@gmail.com"; // Replace with your Gmail address
+    const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddress}&su=${subject}&body=${body}`;
+
+    window.open(gmailLink, "_blank");
+  };
+
+  // submitFeedback = () => {
+  //   // Add logic to handle the submitted feedback
+  //   // For simplicity, let's just show an alert
+  //   alert(`Feedback submitted: ${this.state.feedbackText}`);
+  //   this.setState({ showFeedbackModal: false, feedbackText: '' });
+  // };
+
   onItemizedItemEdit(evt) {
     var item = {
       id: evt.target.id,
@@ -441,6 +459,9 @@ class InvoiceForm extends React.Component {
                   />
                 </Form.Group>
               )}
+            </div>
+            <div className="sendFeedback">
+              <Button onClick={this.handleFeedbackClick}>Feedback</Button>
             </div>
           </Col>
         </Row>
