@@ -10,11 +10,15 @@ import InvoiceModal from "./InvoiceModal";
 import InputGroup from "react-bootstrap/InputGroup";
 import AuthButton from "../AuthButton";
 import HistoryButton from "../components/HistoryButton";
+import FavouriteContacts from "./FavouriteContacts";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 
 class InvoiceForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      userId: null,
       isOpen: false,
       currency: "$",
       currentDate: "",
@@ -46,6 +50,13 @@ class InvoiceForm extends React.Component {
     this.editField = this.editField.bind(this);
   }
   componentDidMount(prevProps) {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.setState({ userId: user.uid });
+      } else {
+        this.setState({ userId: null });
+      }
+    });
     this.handleCalculateTotal();
   }
   handleRowDel(items) {
@@ -140,6 +151,21 @@ class InvoiceForm extends React.Component {
     this.setState({ isOpen: true });
   };
   closeModal = (event) => this.setState({ isOpen: false });
+  handleFavouriteSelect = (favourite, option) => {
+    if (option === "billTo") {
+      this.setState({
+        billTo: favourite.name,
+        billToEmail: favourite.email,
+        billToAddress: favourite.billingAddress,
+      });
+    } else if (option === "billFrom") {
+      this.setState({
+        billFrom: favourite.name,
+        billFromEmail: favourite.email,
+        billFromAddress: favourite.billingAddress,
+      });
+    }
+  };
   render() {
     return (
       <Form onSubmit={this.openModal}>
@@ -410,6 +436,15 @@ class InvoiceForm extends React.Component {
                   </InputGroup.Text>
                 </InputGroup>
               </Form.Group>
+              {this.state.userId != null && (
+                <Form.Group className="my-3">
+                  <Form.Label className="fw-bold"></Form.Label>
+                  <FavouriteContacts
+                    onFavouriteSelect={this.handleFavouriteSelect}
+                    userId={this.state.userId}
+                  />
+                </Form.Group>
+              )}
             </div>
           </Col>
         </Row>
