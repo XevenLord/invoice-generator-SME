@@ -57,7 +57,7 @@ const InvoiceHistory = () => {
 
   return (
     <div>
-      <div className="mb-4">
+      <div>
         <button
           onClick={() => navigate("/form")}
           className="btn btn-secondary rounded"

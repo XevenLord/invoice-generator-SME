@@ -9,10 +9,10 @@ const HistoryButton = () => {
 
   return (
     <div>
-
+      
         <button
           onClick={() => navigate("/history")}
-          className="btn btn-secondary rounded"
+          className="btn btn-success rounded"
           style={{ marginRight: "10px" }}
         >
           <FaHome /> Invoice History
