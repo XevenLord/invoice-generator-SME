@@ -66,7 +66,7 @@ const InvoiceHistory = () => {
           Back To Home
         </button>
       </div>
-      <h1>InvoiceHistory</h1>
+      <h1 className="mt-3">InvoiceHistory</h1>
 
       <hr />
 

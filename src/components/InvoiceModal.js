@@ -34,6 +34,14 @@ function GenerateInvoice(billTo) {
   // Generate PDF with scaled content
   pdf.html(source, {
     callback: async function (pdf) {
+      // Assuming 'pdf' is the generated PDF document using jsPDF
+      const totalPages = pdf.internal.getNumberOfPages();
+
+      // Remove extra pages after the first page
+      for (let i = totalPages; i > 1; i--) {
+        pdf.deletePage(i);
+      }
+      
       pdf.save('invoice-001.pdf');
 
       //save into firebase

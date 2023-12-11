@@ -364,7 +364,7 @@ class InvoiceForm extends React.Component {
                   <AuthButton />
                 </div>
               </div>
-              <div>
+              <div className="mt-3">
                 <HistoryButton />
               </div>
               <InvoiceModal
