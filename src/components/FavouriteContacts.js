@@ -75,6 +75,24 @@ function FavouriteContacts({ onFavouriteSelect, userId }) {
     handleCloseSelectOption();
   };
 
+  const handleDeleteFavourite = async (fav) => {
+    const updatedFavourites = favourites.filter((f) => f !== fav);
+    setFavourites(updatedFavourites);
+
+    try {
+      const userDocRef = doc(db, "users", userId);
+      await updateDoc(userDocRef, {
+        favouriteContacts: updatedFavourites,
+      });
+      console.log("Favorite contact deleted from the user document.");
+    } catch (error) {
+      console.error(
+        "Error deleting favorite contact from the user document: ",
+        error
+      );
+    }
+  };
+
   return (
     <>
       <div className="favorite-section">
@@ -143,6 +161,13 @@ function FavouriteContacts({ onFavouriteSelect, userId }) {
               onClick={() => handleSelectFavourite("billFrom")}
             >
               Bill From
+            </Button>
+            
+            <Button
+            class="btn btn-primary"
+              onClick={() => handleDeleteFavourite(selectedFavourite)}
+            >
+              Remove
             </Button>
           </div>
         </Modal.Body>
