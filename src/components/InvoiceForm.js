@@ -9,6 +9,7 @@ import InvoiceItem from "./InvoiceItem";
 import InvoiceModal from "./InvoiceModal";
 import InputGroup from "react-bootstrap/InputGroup";
 import AuthButton from "../AuthButton";
+import HistoryButton from "../components/HistoryButton";
 import FavouriteContacts from "./FavouriteContacts";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
@@ -380,6 +381,9 @@ class InvoiceForm extends React.Component {
                 <div className="text-end">
                   <AuthButton />
                 </div>
+              </div>
+              <div className="mt-3">
+                <HistoryButton />
               </div>
               <InvoiceModal
                 showModal={this.state.isOpen}

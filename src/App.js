@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import HomePage from "./components/HomePage";
 import InvoiceForm from "./components/InvoiceForm";
 import AuthForm from "./components/AuthForm";
+import InvoiceHistory from "./components/InvoiceHistory";
 
 class App extends Component {
   render() {
@@ -18,6 +19,7 @@ class App extends Component {
             <Route path="/" element={<HomePage />} />
             <Route path="/auth" element={<AuthForm />} />
             <Route path="/form" element={<InvoiceForm />} />
+            <Route path="/history" element={<InvoiceHistory />} />
           </Routes>
         </Container>
       </div>
