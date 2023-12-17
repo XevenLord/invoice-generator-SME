@@ -6,30 +6,18 @@ import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import { BiPaperPlane, BiCloudDownload, BiPlusCircle } from "react-icons/bi";
-<<<<<<< HEAD
-import html2canvas from 'html2canvas';
-=======
->>>>>>> afde4855653c1ba07e1a39feaf8fd6c89585375d
 import jsPDF from 'jspdf'
 import { ref, uploadString, getDownloadURL  } from 'firebase/storage';
 import { collection, addDoc, Timestamp, doc, getDoc } from 'firebase/firestore';
 import { db, auth, storage } from "../firebase";
 import emailjs from '@emailjs/browser';
 
-<<<<<<< HEAD
-
-// var userEmail = auth.currentUser ? auth.currentUser.email : 'GUEST';
-
-function GenerateInvoice(billTo) {
-=======
 async function GenerateInvoice(billTo) {
->>>>>>> afde4855653c1ba07e1a39feaf8fd6c89585375d
   return new Promise((resolve, reject) => {
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'pt',
       format: [612, 792],
-<<<<<<< HEAD
     });
 
     const source = document.getElementById('invoiceCapture');
@@ -65,36 +53,6 @@ async function GenerateInvoice(billTo) {
         scale: scaleFactor,
       },
     });
-=======
-    });
-
-    const source = document.getElementById('invoiceCapture');
-
-    // Determine the actual height of the content
-    const contentHeight = source.offsetHeight;
-
-    // Set a ratio to scale content to fit within the PDF page
-    const scaleFactor = 342 / contentHeight; // Adjust 792 to the desired page height
-
-    let pdfID = null;
-
-    // Generate PDF with scaled content
-    pdf.html(source, {
-      callback: async function (pdf) {
-        pdf.save('invoice-001.pdf');
-
-        // Save into firebase
-        const pdfUrl = await savePdfToStorage(pdf);
-        pdfID = await savePdfUrlToFirestore(pdfUrl, billTo);
-        resolve(pdfID);
-      },
-      x: 0,
-      y: 0,
-      html2canvas: {
-        scale: scaleFactor,
-      },
-    });
->>>>>>> afde4855653c1ba07e1a39feaf8fd6c89585375d
   });
 }
 
@@ -122,10 +80,6 @@ async function savePdfToStorage(pdf) {
   }
 }
 
-<<<<<<< HEAD
-=======
-//i want to setCurrentPdfID here
->>>>>>> afde4855653c1ba07e1a39feaf8fd6c89585375d
 async function savePdfUrlToFirestore(pdfUrl, billTo) {
   // Save the PDF URL to Firestore
   const invoicesCollectionRef = collection(db, 'invoice');
@@ -144,7 +98,6 @@ async function savePdfUrlToFirestore(pdfUrl, billTo) {
   }
 }
 
-<<<<<<< HEAD
 // function GenerateInvoice() {
 //   html2canvas(document.querySelector("#invoiceCapture")).then((canvas) => {
 //     const imgData = canvas.toDataURL('image/png', 1.0);
@@ -161,8 +114,6 @@ async function savePdfUrlToFirestore(pdfUrl, billTo) {
 //     pdf.save('invoice-001.pdf');
 //   });
 // }
-=======
->>>>>>> afde4855653c1ba07e1a39feaf8fd6c89585375d
 
 async function SendInvoice(id, billFrom, billTo, billFromEmail, billToEmail){
   try {
@@ -185,10 +136,7 @@ async function SendInvoice(id, billFrom, billTo, billFromEmail, billToEmail){
       });
   } catch (error) {
     alert('PDF link is generating, click again to send the email');
-<<<<<<< HEAD
     console.log(error)
-=======
->>>>>>> afde4855653c1ba07e1a39feaf8fd6c89585375d
   }
 }
 
@@ -207,10 +155,7 @@ class InvoiceModal extends React.Component {
       this.setState({ invoiceGenerated: true });
       await GenerateInvoice(billTo).then(pdfID => {
         this.setState({currentPdfID: pdfID})
-<<<<<<< HEAD
         console.log(this.state.currentPdfID+' , generated:'+pdfID);
-=======
->>>>>>> afde4855653c1ba07e1a39feaf8fd6c89585375d
       });
     } else {
       alert("Invoice already generated and saved. Click on 'Create New' to create a new invoice!");
@@ -234,12 +179,7 @@ class InvoiceModal extends React.Component {
               <div className="w-100">
                 <h4 className="fw-bold my-2">{this.props.info.billFrom||'John Uberbacher'}</h4>
                 <h6 className="fw-bold text-secondary mb-1">
-<<<<<<< HEAD
-                  Invoice 1: {this.props.info.invoiceNumber||''}
-=======
                   Invoice #: {this.props.info.invoiceNumber||''}
-                  {this.currentPdfID}
->>>>>>> afde4855653c1ba07e1a39feaf8fd6c89585375d
                 </h6>
               </div>
               <div className="text-end ms-4">
@@ -334,23 +274,19 @@ class InvoiceModal extends React.Component {
           <div className="pb-4 px-4">
             <Row>
               <Col md={4}>
-<<<<<<< HEAD
                 <Button variant="primary" className="d-block w-100" onClick={() => this.CheckSend(this.props.info.billFromEmail, this.props.info.billToEmail, this.props.info.billFrom, this.props.info.billTo)}>
-=======
-                <Button variant="outline-primary" className="d-block w-100" onClick={() => this.CheckSend(this.props.info.billFromEmail, this.props.info.billToEmail, this.props.info.billFrom, this.props.info.billTo)}>
->>>>>>> afde4855653c1ba07e1a39feaf8fd6c89585375d
-                  <BiPaperPlane style={{width: '15px', height: '15px', marginTop: '-3px'}} className="me-2"/>Send Invoice
+                  <BiPaperPlane style={{width: '16px', height: '16px', marginTop: '-3px'}} className="me-2"/>Send Invoice
                 </Button>
               </Col>
               <Col md={4}>
-                <Button variant="outline-primary" className="d-block w-100 mt-3 mt-md-0" onClick={() => this.CheckGenerate(this.props.info.billTo)}>
+                <Button variant="primary" className="d-block w-100 mt-3 mt-md-0" onClick={() => this.CheckGenerate(this.props.info.billTo)}>
                   <BiCloudDownload style={{width: '16px', height: '16px', marginTop: '-3px'}} className="me-2"/>
                   Download Copy
                 </Button>
               </Col>
               <Col md={4}>
-                <Button variant="primary" className="d-block w-100 mt-3 mt-md-0" onClick={() => window.location.reload()}>
-                  <BiPlusCircle style={{width: '16px', height: '16px', marginTop: '-3px'}} className="me-2"/>
+                <Button variant="outline-primary" className="d-block w-100 mt-3 mt-md-0" onClick={() => window.location.reload()}>
+                  <BiPlusCircle style={{width: '15px', height: '15px', marginTop: '-3px'}} className="me-2"/>
                   Create New
                 </Button>
               </Col>
