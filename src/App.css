@@ -87,6 +87,26 @@ hr {
   user-select: none;
 }
 
+.sendFeedback{
+  position: fixed;
+  right:0;
+  bottom:20px;
+  /* transform: rotate(-90deg);
+  transform-origin: bottom right; */
+}
+
+.sendFeedback button {
+  background-color: black;
+  border: none;
+  width: 200px;
+}
+
+.sendFeedback button:hover,
+.sendFeedback button:active {
+  background-color: grey;
+  border: none;
+  width: 200px;
+}
 .favorite-section {
   display: flex;
   align-items: center; /* Aligns items vertically center */

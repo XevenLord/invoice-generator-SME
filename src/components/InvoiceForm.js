@@ -9,6 +9,7 @@ import InvoiceItem from "./InvoiceItem";
 import InvoiceModal from "./InvoiceModal";
 import InputGroup from "react-bootstrap/InputGroup";
 import AuthButton from "../AuthButton";
+import HistoryButton from "../components/HistoryButton";
 import FavouriteContacts from "./FavouriteContacts";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
@@ -117,6 +118,24 @@ class InvoiceForm extends React.Component {
       }
     );
   }
+
+  handleFeedbackClick = () => {
+    //this.setState({ showFeedbackModal: true });
+    const subject = encodeURIComponent("Feedback for Invoice Generator");
+    const body = encodeURIComponent("Hi, I have some feedback:\n\n");
+    const emailAddress = "aiyinn0621@gmail.com"; // Replace with your Gmail address
+    const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddress}&su=${subject}&body=${body}`;
+
+    window.open(gmailLink, "_blank");
+  };
+
+  // submitFeedback = () => {
+  //   // Add logic to handle the submitted feedback
+  //   // For simplicity, let's just show an alert
+  //   alert(`Feedback submitted: ${this.state.feedbackText}`);
+  //   this.setState({ showFeedbackModal: false, feedbackText: '' });
+  // };
+
   onItemizedItemEdit(evt) {
     var item = {
       id: evt.target.id,
@@ -363,6 +382,9 @@ class InvoiceForm extends React.Component {
                   <AuthButton />
                 </div>
               </div>
+              <div className="mt-3">
+                <HistoryButton />
+              </div>
               <InvoiceModal
                 showModal={this.state.isOpen}
                 closeModal={this.closeModal}
@@ -441,6 +463,9 @@ class InvoiceForm extends React.Component {
                   />
                 </Form.Group>
               )}
+            </div>
+            <div className="sendFeedback">
+              <Button onClick={this.handleFeedbackClick}>Feedback</Button>
             </div>
           </Col>
         </Row>
