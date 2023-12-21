@@ -12,74 +12,53 @@ import { collection, addDoc, Timestamp, doc, getDoc } from 'firebase/firestore';
 import { db, auth, storage } from "../firebase";
 import emailjs from '@emailjs/browser';
 
+function GeneratePDF(){
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'pt',
+    format: [612, 792],
+  });
+
+  const source = document.getElementById('invoiceCapture');
+  const contentHeight = source.offsetHeight;
+  const scaleFactor = 342 / contentHeight;
+  return {pdf, source, scaleFactor};
+}
+
 async function GenerateInvoice(billTo) {
   return new Promise((resolve, reject) => {
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'pt',
-      format: [612, 792],
-    });
+    const { pdf, source, scaleFactor } = GeneratePDF();
 
-    const source = document.getElementById('invoiceCapture');
-    
-    // Determine the actual height of the content
-    const contentHeight = source.offsetHeight;
-
-    // Set a ratio to scale content to fit within the PDF page
-    const scaleFactor = 342 / contentHeight; // Adjust 792 to the desired page height
-    let pdfID = null;
-    // Generate PDF with scaled content
     pdf.html(source, {
       callback: async function (pdf) {
-        // Assuming 'pdf' is the generated PDF document using jsPDF
-        const totalPages = pdf.internal.getNumberOfPages();
+        // Get the PDF as a data URL directly
+        const pdfDataUrl = pdf.output('datauristring');
 
-        // Remove extra pages after the first page
-        for (let i = totalPages; i > 1; i--) {
-          pdf.deletePage(i);
+        // Save the PDF data URL to Firestore
+        try {
+          const currentDate = new Date().toISOString();
+          const storageRef = ref(storage, `${auth.currentUser ? auth.currentUser.email : 'GUEST'}/${currentDate}.pdf`);
+          await uploadString(storageRef, pdfDataUrl, 'data_url');
+          const downloadURL = await getDownloadURL(storageRef);
+
+          // Save the PDF URL to Firestore
+          const pdfID = await savePdfUrlToFirestore(downloadURL, billTo);
+          resolve(pdfID);
+        } catch (error) {
+          console.error('Error saving PDF to storage:', error);
+          reject(error);
         }
-        
-        pdf.save('invoice-001.pdf');
-
-        //save into firebase
-        const pdfUrl = await savePdfToStorage(pdf);
-        // alert(pdfUrl)
-        pdfID = await savePdfUrlToFirestore(pdfUrl, billTo);
-        resolve(pdfID);
       },
       x: 0,
       y: 0,
       html2canvas: {
         scale: scaleFactor,
-      },
-    });
+      },
+    });
   });
 }
 
-async function savePdfToStorage(pdf) {
-
-  try {
-    // Generate data URL from the PDF blob
-    const dataURL = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(pdf.output('blob'));
-    });
-
-    var currentDate = new Date().toISOString() // Format the current date
-    // Save the PDF data URL to Firebase Storage
-    const storageRef = ref(storage, `${auth.currentUser ? auth.currentUser.email : 'GUEST'}/${currentDate}.pdf`);
-    await uploadString(storageRef, dataURL, 'data_url');
-
-    const downloadURL = await getDownloadURL(storageRef);
-
-    return downloadURL;
-  } catch (error) {
-    console.error('Error saving PDF to storage:', error);
-    throw error; // Re-throw the error for further handling
-  }
-}
-
+//i want to setCurrentPdfID here
 async function savePdfUrlToFirestore(pdfUrl, billTo) {
   // Save the PDF URL to Firestore
   const invoicesCollectionRef = collection(db, 'invoice');
@@ -98,22 +77,20 @@ async function savePdfUrlToFirestore(pdfUrl, billTo) {
   }
 }
 
-// function GenerateInvoice() {
-//   html2canvas(document.querySelector("#invoiceCapture")).then((canvas) => {
-//     const imgData = canvas.toDataURL('image/png', 1.0);
-//     const pdf = new jsPDF({
-//       orientation: 'portrait',
-//       unit: 'pt',
-//       format: [612, 792]
-//     });
-//     pdf.internal.scaleFactor = 1;
-//     const imgProps= pdf.getImageProperties(imgData);
-//     const pdfWidth = pdf.internal.pageSize.getWidth();
-//     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-//     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-//     pdf.save('invoice-001.pdf');
-//   });
-// }
+async function savePdfToStorage() {
+  const { pdf, source, scaleFactor } = GeneratePDF();
+
+  pdf.html(source, {
+    callback: async function (pdf) {
+      pdf.save('invoice-001.pdf');
+    },
+    x: 0,
+    y: 0,
+    html2canvas: {
+      scale: scaleFactor,
+    },
+  });
+}
 
 async function SendInvoice(id, billFrom, billTo, billFromEmail, billToEmail){
   try {
@@ -136,7 +113,6 @@ async function SendInvoice(id, billFrom, billTo, billFromEmail, billToEmail){
       });
   } catch (error) {
     alert('PDF link is generating, click again to send the email');
-    console.log(error)
   }
 }
 
@@ -149,22 +125,27 @@ class InvoiceModal extends React.Component {
     };
   }
 
+  async setInvoiceID(billTo){
+    await GenerateInvoice(billTo).then(pdfID => {
+      this.setState({ invoiceGenerated: true });
+      this.setState({currentPdfID: pdfID})
+      console.log("Invoice ID is set to: "+this.state.currentPdfID)
+    });
+  }
+
   async CheckGenerate(billTo) {
     if (!this.state.invoiceGenerated) {
       // Set invoiceGenerated state to true to prevent further duplication
-      this.setState({ invoiceGenerated: true });
-      await GenerateInvoice(billTo).then(pdfID => {
-        this.setState({currentPdfID: pdfID})
-        console.log(this.state.currentPdfID+' , generated:'+pdfID);
-      });
-    } else {
-      alert("Invoice already generated and saved. Click on 'Create New' to create a new invoice!");
-    }
+      await this.setInvoiceID(billTo);
+    } 
+    savePdfToStorage(this.state.currentPdfID)
+    
   }
 
   async CheckSend(billFromEmail, billToEmail, billFrom, billTo) {
     if (!this.state.invoiceGenerated) {
-      await this.CheckGenerate(billTo);
+      alert('A moment, we are generating your pdf..');
+      await this.setInvoiceID(billTo);
     } 
     alert('Sending your email...');
     SendInvoice(this.state.currentPdfID, billFrom, billTo, billFromEmail, billToEmail);
@@ -180,6 +161,7 @@ class InvoiceModal extends React.Component {
                 <h4 className="fw-bold my-2">{this.props.info.billFrom||'John Uberbacher'}</h4>
                 <h6 className="fw-bold text-secondary mb-1">
                   Invoice #: {this.props.info.invoiceNumber||''}
+                  {this.currentPdfID}
                 </h6>
               </div>
               <div className="text-end ms-4">
@@ -274,19 +256,19 @@ class InvoiceModal extends React.Component {
           <div className="pb-4 px-4">
             <Row>
               <Col md={4}>
-                <Button variant="primary" className="d-block w-100" onClick={() => this.CheckSend(this.props.info.billFromEmail, this.props.info.billToEmail, this.props.info.billFrom, this.props.info.billTo)}>
-                  <BiPaperPlane style={{width: '16px', height: '16px', marginTop: '-3px'}} className="me-2"/>Send Invoice
+                <Button variant="outline-primary" className="d-block w-100" onClick={() => this.CheckSend(this.props.info.billFromEmail, this.props.info.billToEmail, this.props.info.billFrom, this.props.info.billTo)}>
+                  <BiPaperPlane style={{width: '15px', height: '15px', marginTop: '-3px'}} className="me-2"/>Send Invoice
                 </Button>
               </Col>
               <Col md={4}>
-                <Button variant="primary" className="d-block w-100 mt-3 mt-md-0" onClick={() => this.CheckGenerate(this.props.info.billTo)}>
+                <Button variant="outline-primary" className="d-block w-100 mt-3 mt-md-0" onClick={() => this.CheckGenerate(this.props.info.billTo)}>
                   <BiCloudDownload style={{width: '16px', height: '16px', marginTop: '-3px'}} className="me-2"/>
                   Download Copy
                 </Button>
               </Col>
               <Col md={4}>
-                <Button variant="outline-primary" className="d-block w-100 mt-3 mt-md-0" onClick={() => window.location.reload()}>
-                  <BiPlusCircle style={{width: '15px', height: '15px', marginTop: '-3px'}} className="me-2"/>
+                <Button variant="primary" className="d-block w-100 mt-3 mt-md-0" onClick={() => window.location.reload()}>
+                  <BiPlusCircle style={{width: '16px', height: '16px', marginTop: '-3px'}} className="me-2"/>
                   Create New
                 </Button>
               </Col>
