@@ -31,10 +31,16 @@ async function GenerateInvoice(billTo) {
 
     pdf.html(source, {
       callback: async function (pdf) {
+        const totalPages = pdf.internal.getNumberOfPages();
+
+        // Remove extra pages after the first page
+        for (let i = totalPages; i > 1; i--) {
+          pdf.deletePage(i);
+        }
         // Get the PDF as a data URL directly
         const pdfDataUrl = pdf.output('datauristring');
 
-        // Save the PDF data URL to Firestore
+        // Save the PDF data URL to Firebase Storage
         try {
           const currentDate = new Date().toISOString();
           const storageRef = ref(storage, `${auth.currentUser ? auth.currentUser.email : 'GUEST'}/${currentDate}.pdf`);
@@ -58,9 +64,7 @@ async function GenerateInvoice(billTo) {
   });
 }
 
-//i want to setCurrentPdfID here
 async function savePdfUrlToFirestore(pdfUrl, billTo) {
-  // Save the PDF URL to Firestore
   const invoicesCollectionRef = collection(db, 'invoice');
   var myTimestamp = Timestamp.fromDate(new Date());
   
@@ -82,6 +86,12 @@ async function savePdfToStorage() {
 
   pdf.html(source, {
     callback: async function (pdf) {
+      const totalPages = pdf.internal.getNumberOfPages();
+
+      // Remove extra pages after the first page
+      for (let i = totalPages; i > 1; i--) {
+        pdf.deletePage(i);
+      }
       pdf.save('invoice-001.pdf');
     },
     x: 0,
