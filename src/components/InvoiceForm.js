@@ -123,7 +123,7 @@ class InvoiceForm extends React.Component {
     //this.setState({ showFeedbackModal: true });
     const subject = encodeURIComponent("Feedback for Invoice Generator");
     const body = encodeURIComponent("Hi, I have some feedback:\n\n");
-    const emailAddress = "aiyinn0621@gmail.com"; // Replace with your Gmail address
+    const emailAddress = "invoicegitgpt@gmail.com"; // Replace with your Gmail address
     const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${emailAddress}&su=${subject}&body=${body}`;
 
     window.open(gmailLink, "_blank");
