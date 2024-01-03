@@ -40,20 +40,26 @@ async function GenerateInvoice(billTo) {
         // Get the PDF as a data URL directly
         const pdfDataUrl = pdf.output('datauristring');
 
-        // Save the PDF data URL to Firebase Storage
-        try {
-          const currentDate = new Date().toISOString();
-          const storageRef = ref(storage, `${auth.currentUser ? auth.currentUser.email : 'GUEST'}/${currentDate}.pdf`);
-          await uploadString(storageRef, pdfDataUrl, 'data_url');
-          const downloadURL = await getDownloadURL(storageRef);
+        if (auth.currentUser) {
+          // Save the PDF data URL to Firebase Storage
+          try {
+            const currentDate = new Date().toISOString();
+            const storageRef = ref(storage, `${auth.currentUser ? auth.currentUser.email : 'GUEST'}/${currentDate}.pdf`);
+            await uploadString(storageRef, pdfDataUrl, 'data_url');
+            const downloadURL = await getDownloadURL(storageRef);
 
-          // Save the PDF URL to Firestore
-          const pdfID = await savePdfUrlToFirestore(downloadURL, billTo);
-          resolve(pdfID);
-        } catch (error) {
-          console.error('Error saving PDF to storage:', error);
-          reject(error);
+            // Save the PDF URL to Firestore
+            const pdfID = await savePdfUrlToFirestore(downloadURL, billTo);
+            resolve(pdfID);
+          } catch (error) {
+            console.error('Error saving PDF to storage:', error);
+            reject(error);
+          }  
+        } else {
+            alert("This is Guest");
+            savePdfToStorage();
         }
+        
       },
       x: 0,
       y: 0,
