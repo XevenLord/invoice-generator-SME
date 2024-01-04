@@ -57,7 +57,6 @@ async function GenerateInvoice(billTo) {
           }  
         } else {
             alert("This is Guest");
-            savePdfToStorage();
         }
         
       },
@@ -150,12 +149,11 @@ class InvoiceModal extends React.Component {
   }
 
   async CheckGenerate(billTo) {
+    savePdfToStorage();
     if (!this.state.invoiceGenerated) {
       // Set invoiceGenerated state to true to prevent further duplication
       await this.setInvoiceID(billTo);
-    } 
-    savePdfToStorage(this.state.currentPdfID)
-    
+    }     
   }
 
   async CheckSend(billFromEmail, billToEmail, billFrom, billTo) {
