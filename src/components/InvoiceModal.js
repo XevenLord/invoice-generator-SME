@@ -40,25 +40,23 @@ async function GenerateInvoice(billTo) {
         // Get the PDF as a data URL directly
         const pdfDataUrl = pdf.output('datauristring');
 
-        if (auth.currentUser) {
-          // Save the PDF data URL to Firebase Storage
-          try {
-            const currentDate = new Date().toISOString();
-            const storageRef = ref(storage, `${auth.currentUser ? auth.currentUser.email : 'GUEST'}/${currentDate}.pdf`);
-            await uploadString(storageRef, pdfDataUrl, 'data_url');
-            const downloadURL = await getDownloadURL(storageRef);
+        // Save the PDF data URL to Firebase Storage
+        try {
+          const currentDate = new Date().toISOString();
+          const storageRef = ref(storage, `${auth.currentUser ? auth.currentUser.email : 'GUEST'}/${currentDate}.pdf`);
+          await uploadString(storageRef, pdfDataUrl, 'data_url');
+          const downloadURL = await getDownloadURL(storageRef);
 
-            // Save the PDF URL to Firestore
+          if (auth.currentUser) {
+            // Save the PDF URL to Firestore if not guest user
             const pdfID = await savePdfUrlToFirestore(downloadURL, billTo);
-            resolve(pdfID);
-          } catch (error) {
-            console.error('Error saving PDF to storage:', error);
-            reject(error);
-          }  
-        } else {
-            alert("This is Guest");
+          }
+          resolve(downloadURL)
+        } catch (error) {
+          console.error('Error saving PDF to storage:', error);
+          reject(error);
         }
-        
+
       },
       x: 0,
       y: 0,
@@ -72,13 +70,13 @@ async function GenerateInvoice(billTo) {
 async function savePdfUrlToFirestore(pdfUrl, billTo) {
   const invoicesCollectionRef = collection(db, 'invoice');
   var myTimestamp = Timestamp.fromDate(new Date());
-  
+
   try {
-    const docRef = await addDoc(invoicesCollectionRef, { 
+    const docRef = await addDoc(invoicesCollectionRef, {
       email: auth.currentUser ? auth.currentUser.email : 'GUEST',
       receiver: billTo,
       time: myTimestamp,
-      link: pdfUrl 
+      link: pdfUrl
     });
     return docRef.id;
   } catch (error) {
@@ -107,18 +105,14 @@ async function savePdfToStorage() {
   });
 }
 
-async function SendInvoice(id, billFrom, billTo, billFromEmail, billToEmail){
+async function SendInvoice(pdfURL, billFrom, billTo, billFromEmail, billToEmail){
   try {
-    const docRef = doc(db, "invoice", id);
-    const docSnap = await getDoc(docRef);
-    const pdfUrl = docSnap.data().link;
-
     emailjs.send('service_sk0273i', 'template_edd8fcq', {
       billFrom: billFrom,
       billTo: billTo,
       billFromEmail: billFromEmail,
       billToEmail: billToEmail,
-      message: pdfUrl,
+      message: pdfURL,
     }, 'a-mqEqfLpAycZy9yF')
       .then((response) => {
         alert('Email sent successfully!');
@@ -141,10 +135,10 @@ class InvoiceModal extends React.Component {
   }
 
   async setInvoiceID(billTo){
-    await GenerateInvoice(billTo).then(pdfID => {
+    await GenerateInvoice(billTo).then(pdfURL => {
       this.setState({ invoiceGenerated: true });
-      this.setState({currentPdfID: pdfID})
-      console.log("Invoice ID is set to: "+this.state.currentPdfID)
+      this.setState({currentPdfURL: pdfURL})
+      console.log("Invoice URL is set to: "+this.state.currentPdfURL)
     });
   }
 
@@ -153,16 +147,16 @@ class InvoiceModal extends React.Component {
     if (!this.state.invoiceGenerated) {
       // Set invoiceGenerated state to true to prevent further duplication
       await this.setInvoiceID(billTo);
-    }     
+    }
   }
 
   async CheckSend(billFromEmail, billToEmail, billFrom, billTo) {
     if (!this.state.invoiceGenerated) {
       alert('A moment, we are generating your pdf..');
       await this.setInvoiceID(billTo);
-    } 
+    }
     alert('Sending your email...');
-    SendInvoice(this.state.currentPdfID, billFrom, billTo, billFromEmail, billToEmail);
+    SendInvoice(this.state.currentPdfURL, billFrom, billTo, billFromEmail, billToEmail);
   }
 
   render() {
