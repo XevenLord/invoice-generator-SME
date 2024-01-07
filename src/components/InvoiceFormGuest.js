@@ -53,7 +53,11 @@ class InvoiceFormGuest extends React.Component {
     this.setState(this.state.items);
   }
   handleAddEvent(evt) {
-    var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
+    const idBytes = crypto.getRandomValues(new Uint8Array(16));
+    const idHex = Array.from(idBytes)
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("");
+    const id = idHex;
     var items = {
       id: id,
       name: "",
