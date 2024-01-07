@@ -12,7 +12,7 @@ import HistoryButton from "../components/HistoryButton";
 import FavouriteContacts from "./FavouriteContacts";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase";
-import { FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt, FaHome } from "react-icons/fa";
 
 class InvoiceForm extends React.Component {
   constructor(props) {
@@ -386,18 +386,33 @@ class InvoiceForm extends React.Component {
                   </Button>
                 </div>
                 <div className="text-end">
-                  <button
-                    onClick={() => this.userSignOut()}
-                    className="btn btn-danger rounded-pill"
-                    style={{ marginRight: "10px" }}
-                  >
-                    <FaSignOutAlt /> Logout
-                  </button>
+                  {this.state.userId != null && (
+                    <button
+                      onClick={() => this.userSignOut()}
+                      className="btn btn-danger rounded-pill"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <FaSignOutAlt /> Logout
+                    </button>
+                  )}
+                  {this.state.userId == null && (
+                    <button
+                      onClick={() => {
+                        window.location.replace("/");
+                      }}
+                      className="btn btn-primary rounded-pill"
+                      style={{ marginRight: "10px" }}
+                    >
+                      <FaHome /> Home
+                    </button>
+                  )}
                 </div>
               </div>
-              <div className="mt-3">
-                <HistoryButton />
-              </div>
+              {this.state.userId != null && (
+                <div className="mt-3">
+                  <HistoryButton />
+                </div>
+              )}
               <InvoiceModal
                 showModal={this.state.isOpen}
                 closeModal={this.closeModal}

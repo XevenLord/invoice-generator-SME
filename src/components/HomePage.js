@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import { Link, useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [signOutCalled, setSignOutCalled] = useState(false);
 
   const buttonStyle = {
     width: "200px",
@@ -22,7 +25,6 @@ const HomePage = () => {
     verticalAlign: "top",
     boxShadow: "none !important",
   };
-  
 
   const login = () => {
     navigate("/auth", { state: { isSignup: false } });
@@ -32,15 +34,33 @@ const HomePage = () => {
     navigate("/auth", { state: { isSignup: true } });
   };
 
+  useEffect(() => {
+    if (!signOutCalled) {
+      userSignOut();
+      setSignOutCalled(true);
+    }
+  }, []);
+
+  const userSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        sessionStorage.clear();
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <div className="d-flex flex-column justify-content-center align-items-center">
       <h1>INVOICE GENERATOR</h1>
       <div className="mt-5 mb-4">
-        <Button onClick={login} style={{...buttonStyle, background: "#308BDE"}}>
+        <Button
+          onClick={login}
+          style={{ ...buttonStyle, background: "#308BDE" }}
+        >
           LOGIN
         </Button>
       </div>
-      <Link to="/form-guest">
+      <Link to="/form">
         <Button variant="secondary" style={buttonStyle}>
           CONTINUE AS GUEST
         </Button>
