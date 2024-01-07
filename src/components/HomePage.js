@@ -40,7 +40,7 @@ const HomePage = () => {
           LOGIN
         </Button>
       </div>
-      <Link to="/form">
+      <Link to="/form-guest">
         <Button variant="secondary" style={buttonStyle}>
           CONTINUE AS GUEST
         </Button>
