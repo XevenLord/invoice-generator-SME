@@ -4,8 +4,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebase";
 import React, { useState, useEffect } from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+import { Button, Form, Modal } from "react-bootstrap";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { FiChevronLeft } from "react-icons/fi";
 import { doc, setDoc, getFirestore } from "firebase/firestore";
@@ -19,6 +18,9 @@ const AuthForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [isSignup, setIsSignup] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState("");
+  const [modalType, setModalType] = useState("");
 
   const buttonStyle = {
     width: isSignup ? "200px" : "150px",
@@ -61,25 +63,58 @@ const AuthForm = () => {
               console.log("User document created in Firestore");
             })
             .catch((error) => {
+              setModalContent(error.message);
+              setModalType("error");
+              setShowModal(true);
               console.error("Error writing document to Firestore: ", error);
             });
           setIsSignup(false);
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          setModalContent(error.message);
+          setModalType("error");
+          setShowModal(true);
+          console.log(error);
+        });
 
       // signup logic
     } else {
       // login logic
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          navigate("/form");
+          setModalContent("Login successful! Directed to the main page in 3 sec");
+          setModalType("success");
+          setShowModal(true);
+          setTimeout(() => {
+            navigate("/form");
+          }, 3000);
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          setModalContent(error.message);
+          setModalType("error");
+          setShowModal(true);
+          console.log(error);
+        });
     }
   };
 
+  const handleClose = () => setShowModal(false);
+
   return (
     <div>
+      <Modal show={showModal} onHide={handleClose}>
+        <Modal.Header closeButton={modalType === "error"}>
+          <Modal.Title>Notification</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalContent}</Modal.Body>
+        {modalType === "error" && (
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        )}
+      </Modal>
       <div className="mb-2">
         <Link to="/" style={{ color: "black" }}>
           <FiChevronLeft size={38} />
