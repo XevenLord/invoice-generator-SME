@@ -7,14 +7,14 @@ import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
 
-  apiKey: "AIzaSyD6u3biUg7P3cdfcvpghI_SvD4zz03S1YA",
-  authDomain: "invoice-generator-7b5ce.firebaseapp.com",
-  projectId: "invoice-generator-7b5ce",
-  storageBucket: "invoice-generator-7b5ce.appspot.com",
-  messagingSenderId: "98178041358",
-  appId: "1:98178041358:web:c6d85a6815db0e20891e5f",
-  measurementId: "G-19BZH2M1B8"
-
+  apiKey: "AIzaSyDZUPaAYRQj1WfctgQmPh0dw9Geds6lGiY",
+  authDomain: "invoice-generator-f622b.firebaseapp.com",
+  projectId: "invoice-generator-f622b",
+  storageBucket: "invoice-generator-f622b.appspot.com",
+  messagingSenderId: "560076647222",
+  appId: "1:560076647222:web:1019d278ede7f4028fe197",
+  measurementId: "G-DTTQ5SLLQE"
+  
 };
 
 // Initialize Firebase
