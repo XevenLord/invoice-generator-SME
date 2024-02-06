@@ -10,7 +10,8 @@ pwd: invoice-gitgpt1
 
 
 ### Live Demo
-https://invoice-generator-react.netlify.app/
+https://invoice-generator-react.netlify.app/ - ORIGINAL VERSION
+https://invoice-generator-f622b.web.app - ENHANCED VERSION FROM GITGPT
 
 ### Screenshots
 <img src="https://i.imgur.com/wRetnxk.png" style="max-width: 100px; width: 100%; height: auto;">

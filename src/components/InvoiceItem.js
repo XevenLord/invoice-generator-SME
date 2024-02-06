@@ -100,5 +100,5 @@ class ItemRow extends React.Component {
   }
 
 }
-
+                                                                                                                                                                                                                        
 export default InvoiceItem;

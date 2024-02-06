@@ -164,7 +164,7 @@ class InvoiceModal extends React.Component {
       await this.setInvoiceID(billTo);
     }
     savePdfToStorage();
-  }
+    }
 
   async CheckSend(billFromEmail, billToEmail, billFrom, billTo) {
     if (!this.state.invoiceGenerated) {
